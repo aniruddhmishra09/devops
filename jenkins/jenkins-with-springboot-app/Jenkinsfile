@@ -52,5 +52,36 @@ pipeline {
                 }
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Run SonarQube analysis
+                    sh "mvn sonar:sonar"
+                }
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Build Docker image
+                    sh "echo 'Building Docker image for Jenkins with Spring Boot app'"
+                    //sh "docker build -t jenkins-with-springboot-app:latest ."
+                }
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            steps {
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Push Docker image to Docker Hub
+                    sh "echo 'Pushing Docker image to Docker Hub'"
+                    //sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                    //sh "docker tag jenkins-with-springboot-app:latest $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
+                    //sh "docker push $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
+                }
+            }
+        }
     }
 }
