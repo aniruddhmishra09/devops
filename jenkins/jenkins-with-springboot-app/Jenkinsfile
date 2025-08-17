@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "M3"
+    }
+
+    stages {
+        stage('Checkout'){
+            steps{
+               // Get Jenkins Devops Repo
+               // Not Required as code will be automatically checked out by Jenkins
+               // git branch: 'main', url: 'https://github.com/aniruddhmishra09/devops.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                //sh "cd jenkins/jenkins-with-springboot-app"
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Run Maven on a Unix agent.
+                    sh "mvn clean install -DskipTests=true"
+                }
+            }
+        }
+        stage('Unit Tests'){
+            steps{
+                dir('jenkins/jenkins-with-springboot-app') {
+                // Run Maven on a Unix agent.
+                    sh "mvn test"
+                }
+            }
+        }
+    }
+}
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "M3"
+    }
+
+    stages {
+        stage('Checkout'){
+            steps{
+                // Get Jenkins Devops Repo
+                git branch: 'main', url: 'https://github.com/aniruddhmishra09/devops.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                //sh "cd jenkins/jenkins-with-springboot-app"
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Run Maven on a Unix agent.
+                    sh "mvn clean install -DskipTests=true"
+                }
+            }
+        }
+        stage('Unit Tests'){
+            steps{
+                dir('jenkins/jenkins-with-springboot-app') {
+                // Run Maven on a Unix agent.
+                    sh "mvn test"
+                }
+            }
+        }
+    }
+}
