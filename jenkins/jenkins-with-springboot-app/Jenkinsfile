@@ -23,12 +23,30 @@ pipeline {
                     sh "mvn clean install -DskipTests=true"
                 }
             }
+            post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+                dir('jenkins/jenkins-with-springboot-app') {
+                success {
+                    archiveArtifacts 'target/jenkins-with-springboot-app-*.jar'
+                }
+                }
+            }
         }
         stage('Unit Tests'){
             steps{
                 dir('jenkins/jenkins-with-springboot-app') {
                 // Run Maven on a Unix agent.
                     sh "mvn test"
+                }
+            }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                dir('jenkins/jenkins-with-springboot-app') {
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                }
                 }
             }
         }
