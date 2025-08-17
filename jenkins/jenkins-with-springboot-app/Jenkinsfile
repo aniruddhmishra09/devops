@@ -7,13 +7,13 @@ pipeline {
     }
 
     stages {
-        stage('Checkout'){
+        //stage('Checkout'){
             // steps{
                // Get Jenkins Devops Repo
                // Not Required as code will be automatically checked out by Jenkins
                // git branch: 'main', url: 'https://github.com/aniruddhmishra09/devops.git'
             //}
-        }
+        //}
 
         stage('Build') {
             steps {
