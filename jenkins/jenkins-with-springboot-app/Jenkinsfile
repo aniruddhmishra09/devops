@@ -21,9 +21,8 @@ pipeline {
                                     defaultValue: true,
                                     description: 'Run Unit Tests',
                                     name: 'RUN_UNIT_TESTS'
-
                                 ),
-                          ])
+                            ])
                         ])
                 }
             }
@@ -105,8 +104,9 @@ pipeline {
 
         stage('Push Image to Docker Hub') {
             when{
-            expression {}
+                expression {
                     return params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT' || params.BUILD_TYPE == 'PROMOTE TO PRODUCTION ENVIRONMENT'
+                }
             }
             steps {
                 dir('jenkins/jenkins-with-springboot-app') {
