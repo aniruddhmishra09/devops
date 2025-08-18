@@ -6,42 +6,38 @@ pipeline {
         maven "M3"
     }
 
-
-
-
-
     stages {
         stage('Setup parameters') {
-                        steps {
-                            script {
-                                properties([
-                                    parameters([
-                                        choice(
-                                            choices: ['ONE', 'TWO'],
-                                            name: 'PARAMETER_01'
-                                        ),
-                                        booleanParam(
-                                            defaultValue: true,
-                                            description: '',
-                                            name: 'BOOLEAN'
-                                        ),
-                                        text(
-                                            defaultValue: '''
-                                            this is a multi-line
-                                            string parameter example
-                                            ''',
-                                             name: 'MULTI-LINE-STRING'
-                                        ),
-                                        string(
-                                            defaultValue: 'scriptcrunch',
-                                            name: 'STRING-PARAMETER',
-                                            trim: true
-                                        )
-                                    ])
-                                ])
-                            }
-                        }
-                    }
+            steps {
+                script {
+                        properties([
+                            parameters([
+                                choice(
+                                    choices: ['ONE', 'TWO'],
+                                    name: 'PARAMETER_01'
+                                ),
+                                booleanParam(
+                                    defaultValue: true,
+                                    description: '',
+                                    name: 'BOOLEAN'
+                                ),
+                                text(
+                                    defaultValue: '''
+                                    this is a multi-line
+                                    string parameter example
+                                    ''',
+                                     name: 'MULTI-LINE-STRING'
+                                ),
+                                string(
+                                    defaultValue: 'scriptcrunch',
+                                    name: 'STRING-PARAMETER',
+                                    trim: true
+                                )
+                            ])
+                        ])
+                }
+            }
+        }
         //stage('Checkout'){
             // steps{
                // Get Jenkins Devops Repo
@@ -82,8 +78,7 @@ pipeline {
 
                 success {
                 dir('jenkins/jenkins-with-springboot-app') {
-                    junit '**//*
-target/surefire-reports/TEST-*.xml'
+                    junit '**/target/surefire-reports/TEST-*.xml'
                 }
                 }
             }
@@ -126,4 +121,3 @@ target/surefire-reports/TEST-*.xml'
         }
     }
 }
-
