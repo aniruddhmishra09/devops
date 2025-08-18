@@ -19,8 +19,8 @@ pipeline {
                                 ),
                                 booleanParam(
                                     defaultValue: true,
-                                    description: 'Run Unit Tests',
-                                    name: 'RUN_UNIT_TESTS'
+                                    description: 'Run Unit Tests and  SonarQube Analysis',
+                                    name: 'RUN_UNIT_TESTS_AND_SONARQUBE_ANALYSIS'
                                 ),
                             ])
                         ])
@@ -55,6 +55,11 @@ pipeline {
             }
         }
         stage('Unit Tests'){
+            when{
+                expression {
+                    return params.RUN_UNIT_TESTS_AND_SONARQUBE_ANALYSIS == true
+               }
+            }
             steps{
                 dir('jenkins/jenkins-with-springboot-app') {
                 // Run Maven on a Unix agent.
@@ -74,6 +79,11 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
+            when{
+                expression {
+                    return params.RUN_UNIT_TESTS_AND_SONARQUBE_ANALYSIS == true
+               }
+            }
             steps {
                 dir('jenkins/jenkins-with-springboot-app') {
                     withSonarQubeEnv('MAC-SonarQube') {
