@@ -113,9 +113,9 @@ pipeline {
         }
 
         stage('Push Image to Docker Hub') {
-            when{
+            when {
                 expression {
-                    return params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT' || params.BUILD_TYPE == 'PROMOTE TO PRODUCTION ENVIRONMENT'
+                    return params.BUILD_TYPE == 'BUILD' || params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT'
                 }
             }
             steps {
