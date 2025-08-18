@@ -13,27 +13,17 @@ pipeline {
                         properties([
                             parameters([
                                 choice(
-                                    choices: ['ONE', 'TWO'],
-                                    name: 'PARAMETER_01'
+                                    choices: ['BUILD','BUILD AND DEPLOY ON TEST ENVIRONMENT', 'PROMOTE TO PRODUCTION ENVIRONMENT'],
+                                    name: 'BUILD_TYPE',
+                                    description: 'Select the type of build you want to perform'
                                 ),
                                 booleanParam(
                                     defaultValue: true,
-                                    description: '',
-                                    name: 'BOOLEAN'
+                                    description: 'Run Unit Tests',
+                                    name: 'RUN_UNIT_TESTS'
+
                                 ),
-                                text(
-                                    defaultValue: '''
-                                    this is a multi-line
-                                    string parameter example
-                                    ''',
-                                     name: 'MULTI-LINE-STRING'
-                                ),
-                                string(
-                                    defaultValue: 'scriptcrunch',
-                                    name: 'STRING-PARAMETER',
-                                    trim: true
-                                )
-                            ])
+                          ])
                         ])
                 }
             }
@@ -99,6 +89,11 @@ pipeline {
         }
 
         stage('Build Image') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'BUILD' || params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT'
+                }
+            }
             steps {
                 dir('jenkins/jenkins-with-springboot-app') {
                     // Build Docker image
@@ -109,6 +104,10 @@ pipeline {
         }
 
         stage('Push Image to Docker Hub') {
+            when{
+            expression {}
+                    return params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT' || params.BUILD_TYPE == 'PROMOTE TO PRODUCTION ENVIRONMENT'
+            }
             steps {
                 dir('jenkins/jenkins-with-springboot-app') {
                     // Push Docker image to Docker Hub
@@ -116,6 +115,34 @@ pipeline {
                     //sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                     //sh "docker tag jenkins-with-springboot-app:latest $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
                     //sh "docker push $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
+                }
+            }
+        }
+        stage('Deploy to Test Environment') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT'
+                }
+            }
+            steps {
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Deploy to test environment
+                    sh "echo 'Deploying Jenkins with Spring Boot app to test environment'"
+                    // Add your deployment commands here
+                }
+            }
+        }
+        stage('Promote to Production Environment') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'PROMOTE TO PRODUCTION ENVIRONMENT'
+                }
+            }
+            steps {
+                dir('jenkins/jenkins-with-springboot-app') {
+                    // Promote to production environment
+                    sh "echo 'Promoting Jenkins with Spring Boot app to production environment'"
+                    // Add your promotion commands here
                 }
             }
         }
