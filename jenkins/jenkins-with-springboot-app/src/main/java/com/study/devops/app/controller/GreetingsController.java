@@ -14,6 +14,6 @@ public class GreetingsController {
 
     @GetMapping("/hello")
     public ResponseEntity<GreetingResponse> greetings() {
-        return new ResponseEntity<>(new GreetingResponse("Hello from DevOps Application - Jenkins !"), HttpStatus.OK);
+        return new ResponseEntity<>(new GreetingResponse("Hello from DevOps Application - Jenkins!"), HttpStatus.OK);
     }
 }

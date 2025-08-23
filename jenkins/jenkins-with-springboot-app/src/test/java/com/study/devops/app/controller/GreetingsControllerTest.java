@@ -18,6 +18,6 @@ class GreetingsControllerTest {
     void greetings_ReturnsGreetingResponse() throws Exception {
         mockMvc.perform(get("/api/greetings/hello"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Hello from DevOps Application - Jenkins !"));
+                .andExpect(jsonPath("$.message").value("Hello from DevOps Application - Jenkins!"));
     }
 }
