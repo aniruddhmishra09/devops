@@ -6,7 +6,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GreetingsController.class)
 class GreetingsControllerTest {
@@ -18,6 +19,6 @@ class GreetingsControllerTest {
     void greetings_ReturnsGreetingResponse() throws Exception {
         mockMvc.perform(get("/api/greetings/hello"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Hello from DevOps Application - Jenkins !"));
+                .andExpect(jsonPath("$.message").value("Hello from DevOps Application - Docker!"));
     }
 }

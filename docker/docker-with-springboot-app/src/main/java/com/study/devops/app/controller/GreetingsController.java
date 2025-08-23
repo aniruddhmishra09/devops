@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GreetingsController {
 
     @GetMapping("/hello")
-    public ResponseEntity<GreetingResponse> greetings() {
-        return new ResponseEntity<>(new GreetingResponse("Hello from DevOps Application - Jenkins !"), HttpStatus.OK);
+    public ResponseEntity<GreetingResponse> hello() {
+        return new ResponseEntity<>(new GreetingResponse("Hello from DevOps Application - Docker!"), HttpStatus.OK);
     }
 }
