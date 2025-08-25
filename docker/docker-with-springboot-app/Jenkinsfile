@@ -48,7 +48,7 @@ pipeline {
 
                 success {
                 dir('docker/docker-with-springboot-app') {
-                    archiveArtifacts 'target/jenkins-with-springboot-app-*.jar'
+                    archiveArtifacts 'target/docker-with-springboot-app-*.jar'
                 }
                 }
             }
@@ -88,7 +88,7 @@ pipeline {
                     withSonarQubeEnv('MAC-SonarQube') {
                         // Ensure SonarQube is configured in Jenkins with the name 'SonarQube'
                         // Run Maven SonarQube analysis
-                        sh "mvn sonar:sonar -Dsonar.projectKey=jenkins-with-springboot-app"
+                        sh "mvn sonar:sonar -Dsonar.projectKey=docker-with-springboot-app"
                     }
                     // Run SonarQube analysis
                     //sh "mvn sonar:sonar"
@@ -105,8 +105,8 @@ pipeline {
             steps {
                 dir('docker/docker-with-springboot-app') {
                     // Build Docker image
-                    sh "echo 'Building Docker image for Jenkins with Spring Boot app'"
-                    //sh "docker build -t jenkins-with-springboot-app:latest ."
+                    sh "echo 'Building Docker image for Docker with Spring Boot app'"
+                    //sh "docker build -t docker-with-springboot-app:latest ."
                 }
             }
         }
@@ -122,8 +122,8 @@ pipeline {
                     // Push Docker image to Docker Hub
                     sh "echo 'Pushing Docker image to Docker Hub'"
                     //sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    //sh "docker tag jenkins-with-springboot-app:latest $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
-                    //sh "docker push $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
+                    //sh "docker tag docker-with-springboot-app:latest $DOCKER_USERNAME/docker-with-springboot-app:latest"
+                    //sh "docker push $DOCKER_USERNAME/docker-with-springboot-app:latest"
                 }
             }
         }
@@ -136,7 +136,7 @@ pipeline {
             steps {
                 dir('docker/docker-with-springboot-app') {
                     // Deploy to test environment
-                    sh "echo 'Deploying Jenkins with Spring Boot app to test environment'"
+                    sh "echo 'Deploying docker with Spring Boot app to test environment'"
                     // Add your deployment commands here
                 }
             }
