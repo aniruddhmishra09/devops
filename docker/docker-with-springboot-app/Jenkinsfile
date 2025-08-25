@@ -1,0 +1,159 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "M3"
+    }
+
+    stages {
+        stage('Setup parameters') {
+            steps {
+                script {
+                        properties([
+                            parameters([
+                                choice(
+                                    choices: ['BUILD','BUILD AND DEPLOY ON TEST ENVIRONMENT', 'PROMOTE TO PRODUCTION ENVIRONMENT'],
+                                    name: 'BUILD_TYPE',
+                                    description: 'Select the type of build you want to perform'
+                                ),
+                                booleanParam(
+                                    defaultValue: true,
+                                    description: 'Run Unit Tests and  SonarQube Analysis',
+                                    name: 'RUN_UNIT_TESTS_AND_SONARQUBE_ANALYSIS'
+                                ),
+                            ])
+                        ])
+                }
+            }
+        }
+        //stage('Checkout'){
+            // steps{
+               // Get Jenkins Devops Repo
+               // Not Required as code will be automatically checked out by Jenkins
+               // git branch: 'main', url: 'https://github.com/aniruddhmishra09/devops.git'
+            //}
+        //}
+
+        stage('Build') {
+            steps {
+                dir('docker/docker-with-springboot-app') {
+                    // Run Maven on a Unix agent.
+                    sh "mvn clean install -DskipTests=true"
+                }
+            }
+            post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+
+                success {
+                dir('docker/docker-with-springboot-app') {
+                    archiveArtifacts 'target/jenkins-with-springboot-app-*.jar'
+                }
+                }
+            }
+        }
+        stage('Unit Tests'){
+            when{
+                expression {
+                    return params.RUN_UNIT_TESTS_AND_SONARQUBE_ANALYSIS == true
+               }
+            }
+            steps{
+                dir('docker/docker-with-springboot-app') {
+                // Run Maven on a Unix agent.
+                    sh "mvn test"
+                }
+            }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+
+                success {
+                dir('docker/docker-with-springboot-app') {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            when{
+                expression {
+                    return params.RUN_UNIT_TESTS_AND_SONARQUBE_ANALYSIS == true
+               }
+            }
+            steps {
+                dir('docker/docker-with-springboot-app') {
+                    withSonarQubeEnv('MAC-SonarQube') {
+                        // Ensure SonarQube is configured in Jenkins with the name 'SonarQube'
+                        // Run Maven SonarQube analysis
+                        sh "mvn sonar:sonar -Dsonar.projectKey=jenkins-with-springboot-app"
+                    }
+                    // Run SonarQube analysis
+                    //sh "mvn sonar:sonar"
+                }
+            }
+        }
+
+        stage('Build Image') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'BUILD' || params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT'
+                }
+            }
+            steps {
+                dir('docker/docker-with-springboot-app') {
+                    // Build Docker image
+                    sh "echo 'Building Docker image for Jenkins with Spring Boot app'"
+                    //sh "docker build -t jenkins-with-springboot-app:latest ."
+                }
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'BUILD' || params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT'
+                }
+            }
+            steps {
+                dir('docker/docker-with-springboot-app') {
+                    // Push Docker image to Docker Hub
+                    sh "echo 'Pushing Docker image to Docker Hub'"
+                    //sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                    //sh "docker tag jenkins-with-springboot-app:latest $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
+                    //sh "docker push $DOCKER_USERNAME/jenkins-with-springboot-app:latest"
+                }
+            }
+        }
+        stage('Deploy to Test Environment') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'BUILD AND DEPLOY ON TEST ENVIRONMENT'
+                }
+            }
+            steps {
+                dir('docker/docker-with-springboot-app') {
+                    // Deploy to test environment
+                    sh "echo 'Deploying Jenkins with Spring Boot app to test environment'"
+                    // Add your deployment commands here
+                }
+            }
+        }
+        stage('Promote to Production Environment') {
+            when {
+                expression {
+                    return params.BUILD_TYPE == 'PROMOTE TO PRODUCTION ENVIRONMENT'
+                }
+            }
+            steps {
+                dir('docker/docker-with-springboot-app') {
+                    // Promote to production environment
+                    sh "echo 'Promoting Jenkins with Spring Boot app to production environment'"
+                    // Add your promotion commands here
+                }
+            }
+        }
+    }
+}
